@@ -30,7 +30,7 @@ AC_PROG_RANLIB
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-AC_CONFIG_FILES([ Makefile src/Makefile])
+AC_CONFIG_FILES([ Makefile src/Makefile src/knotprotocol.pc])
 
 AC_SUBST([ARFLAGS], ["cr"])
 
