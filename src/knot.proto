@@ -1,0 +1,223 @@
+syntax = "proto3";
+
+enum knot_status {
+	SUCCESS = 0;
+	ERROR_UNKNOWN = -1;
+	PERMITION_DENIED = -2;
+	INVALID_DATA = -3;
+	INVALID_DATA_RAW = -4;
+	DEVICE_NOT_FOUND = -5;
+	GW_FAILURE = -6;
+	CLOUD_FAILURE = -7;
+	CLOUD_OFFLINE = -8;
+	INVALID_UUID = -9;
+	INVALID_UUID_CLOUD = -10;
+	REGISTER_INVALID_DEVICENAME = -11;
+	INVALID_SCHEMA = -12;
+	SCHEMA_NOT_FOUND = -13;
+	SCHEMA_EMPTY = -14;
+	INVALID_CREDENTIAL = -15;
+	CREDENTIAL_UNAUTHORIZED = -16;
+}
+
+enum knot_msg_type {
+	INVALID = 0x00;
+	// KNoT connect/register messages (from device)
+	REGISTER_REQ = 0x10;
+	REGISTER_RESP = 0x11;
+	UNREGISTER_REQ = 0x12;
+	UNREGISTER_RESP = 0x13;
+	AUTH_REQ = 0x14;
+	AUTH_RESP = 0x15;
+	/*
+	 * KNoT device config messages (from device)
+	 * END flag indicates end of schema transfer.
+	 */
+	SCHEMA = 0x40;
+	SCHEMA_RESP = 0x41;
+	SCHEMA_END = 0x42;
+	SCHEMA_END_RESP = 0x43;
+	// KNoT data sending config messages (from gateway)
+	GET_CONFIG = 0x50;
+	SET_CONFIG = 0x51;
+	// KNoT request messages (from gateway)
+	GET_DATA = 0x30;
+	SET_DATA = 0x31;
+	GET_COMMAND = 0x32;
+	SET_COMMAND = 0x33;
+	// KNoT response messages (from device)
+	DATA = 0x20;
+	DATA_RESP = 0x21;
+	COMMAND = 0x22;
+	CONFIG = 0x24;
+	CONFIG_RESP = 0x25;
+}
+
+enum knot_evt {
+	FLAG_NONE = 0x00;
+	FLAG_TIME = 0x01;
+	FLAG_LOWER_THRESHOLD = 0x02;
+	FLAG_UPPER_THRESHOLD = 0x04;
+	FLAG_CHANGE = 0x08;
+	FLAG_UNREGISTERED = 0x80;
+	FLAG_MAX = 0x0f; 
+}
+
+enum knot_type_id {
+	option allow_alias = true;
+	NONE = 0x0000;
+	VOLTAGE = 0x0001;
+	CURRENT = 0x0002;
+	RESISTANCE = 0x0003;
+	POWER = 0x0004;
+	TEMPERATURE = 0x0005;
+	ID_RELATIVE_HUMIDITY = 0x0006;
+	LUMINOSITY = 0x0007;
+	TIME = 0x0008;
+	MASS = 0x0009;
+	PRESSURE = 0x000A;
+	DISTANCE = 0x000B;
+	ANGLE = 0x000C;
+	VOLUME = 0x000D;
+	AREA = 0x000E;
+	RAIN = 0x000F;
+	DENSITY = 0x0010;
+	LATITUDE = 0x0011;
+	LONGITUDE = 0x0012;
+	SPEED = 0x0013;
+	VOLUMEFLOW = 0x0014;
+	ENERGY = 0x0015;
+	BASIC_MAX = 0x0016;
+	PRESENCE = 0xFFF0;
+	SWITCH = 0xFFF1;
+	ID_COMMAND = 0xFFF2;
+	LOGIC_MIN = 0xFFF0;
+	LOGIC_MAX = 0xFFF3;
+	ANALOG = 0xFF10;
+	GENERIC_MIN = 0xFF10;
+	GENERIC_MAX = 0xFF11;
+	ID_INVALID = 0xFFFF;
+}
+
+enum knot_unit {
+	option allow_alias = true;
+	NOT_APPLICABLE = 0x00;
+	VOLTAGE_V = 0x01;
+	VOLTAGE_MV = 0x02;
+	VOLTAGE_KV = 0x03;
+	CURRENT_A = 0x01;
+	CURRENT_MA = 0x02;
+	RESISTANCE_OHM = 0x01;
+	POWER_W = 0x01;
+	POWER_KW = 0x02;
+	POWER_MW = 0x03;
+	TEMPERATURE_C = 0x01;
+	TEMPERATURE_F = 0x02;
+	TEMPERATURE_K = 0x03;
+	RELATIVE_HUMIDITY = 0x01;
+	LUMINOSITY_LM = 0x01;
+	LUMINOSITY_CD = 0x02;
+	LUMINOSITY_LX = 0x03;
+	TIME_S = 0x01;
+	TIME_MS = 0x02;
+	TIME_US = 0x03;
+	MASS_KG = 0x01;
+	MASS_G = 0x02;
+	MASS_LB = 0x03;
+	MASS_OZ = 0x04;
+	PRESSURE_PA = 0x01;
+	PRESSURE_PSI = 0x02;
+	PRESSURE_BAR = 0x03;
+	DISTANCE_M = 0x01;
+	DISTANCE_CM = 0x02;
+	DISTANCE_MI = 0x03;
+	DISTANCE_IN = 0x04;
+	ANGLE_RAD = 0x01;
+	ANGLE_DEGREE = 0x02;
+	VOLUME_L = 0x01;
+	VOLUME_ML = 0x02;
+	VOLUME_FLOZ = 0x03;
+	VOLUME_GAL = 0x04;
+	AREA_M2 = 0x01;
+	AREA_HA = 0x02;
+	AREA_AC = 0x03;
+	RAIN_MM = 0x01;
+	DENSITY_KGM3 = 0x01;
+	LATITUDE_DEGREE = 0x01;
+	LONGITUDE_DEGREE = 0x01;
+	SPEED_MS = 0x01;
+	SPEED_CMS = 0x02;
+	SPEED_KMH = 0x03;
+	SPEED_MIH = 0x04;
+	VOLUMEFLOW_M3S = 0x01;
+	VOLUMEFLOW_SCMM = 0x02;
+	VOLUMEFLOW_LS = 0x03;
+	VOLUMEFLOW_LM = 0x04;
+	VOLUMEFLOW_FT3S = 0x05;
+	VOLUMEFLOW_GALM = 0x06;
+	ENERGY_J = 0x01;
+	ENERGY_NM = 0x02;
+	ENERGY_WH = 0x03;
+	ENERGY_KWH = 0x04;
+	ENERGY_CAL = 0x05;
+	ENERGY_KCAL = 0x06;
+}
+
+enum knot_value_type {
+	option allow_alias = true;
+	TYPE_NOT_APPLICABLE = 0x00;
+	INT = 0x01;
+	FLOAT = 0x02;
+	BOOL = 0x03;
+	RAW = 0x04;
+	MIN = 0x01;
+	MAX = 0x05;
+	TYPE_INVALID = 0XFF;
+}
+
+message knot_msg_register_req {
+	uint64 id = 1;
+	string name = 2;
+}
+
+message knot_msg_register_rsp {
+	knot_status result = 1;
+	string UUID = 2;
+	string token = 3;
+}
+
+message knot_msg_schema_frag {
+	knot_value_type		value_type = 1;	// KNOT_VALUE_TYPE__* (int, float, bool, raw)
+	knot_unit		unit = 2;	// KNOT_UNIT__*
+	knot_type_id		type_id = 3;	// KNOT_TYPE_ID__*
+	string			name = 4;
+	int32			sensor_id = 5;
+}
+
+message knot_msg_schema {
+	repeated knot_msg_schema_frag schema_frags = 1;
+}
+
+message knot_msg_data {
+	int32 sensor_id = 5;
+	oneof payload {
+		int32 value_int = 1;
+		bool value_bool = 2;
+		float value_float = 3;
+		bytes value_raw = 4;
+	}
+}
+
+message knot_msg {
+	knot_msg_type type = 1;
+	uint32 payload_len = 2;
+	oneof msg {
+		knot_msg_register_rsp reg_rsp = 3;
+		knot_msg_register_req reg_req = 4;
+	}
+}
+
+option py_generic_services = true;
+service knot_sm { // knot state machine
+	rpc register_thing(knot_msg_register_req) returns (knot_msg_register_rsp);
+}

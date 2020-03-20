@@ -28,4 +28,6 @@ src/knot_protocol.lo
 src/knotprotocol.pc
 src/.libs
 libs/
+src/libknotprotobuf.la
+src/*.pb*
 stamp-h1
