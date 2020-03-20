@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+enum knot_status {
+	SUCCESS = 0;
+	ERROR_UNKNOWN = -1;
+	PERMITION_DENIED = -2;
+	INVALID_DATA = -3;
+	INVALID_DATA_RAW = -4;
+	DEVICE_NOT_FOUND = -5;
+	GW_FAILURE = -6;
+	CLOUD_FAILURE = -7;
+	CLOUD_OFFLINE = -8;
+	INVALID_UUID = -9;
+	INVALID_UUID_CLOUD = -10;
+	REGISTER_INVALID_DEVICENAME = -11;
+	INVALID_SCHEMA = -12;
+	SCHEMA_NOT_FOUND = -13;
+	SCHEMA_EMPTY = -14;
+	INVALID_CREDENTIAL = -15;
+	CREDENTIAL_UNAUTHORIZED = -16;
+}
+
+enum knot_msg_type {
+	INVALID = 0x00;
+	// KNoT connect/register messages (from device)
+	REGISTER_REQ = 0x10;
+	REGISTER_RESP = 0x11;
+	UNREGISTER_REQ = 0x12;
+	UNREGISTER_RESP = 0x13;
+	AUTH_REQ = 0x14;
+	AUTH_RESP = 0x15;
+	/*
+	 * KNoT device config messages (from device)
+	 * END flag indicates end of schema transfer.
+	 */
+	SCHEMA = 0x40;
+	SCHEMA_RESP = 0x41;
+	SCHEMA_END = 0x42;
+	SCHEMA_END_RESP = 0x43;
+	// KNoT data sending config messages (from gateway)
+	GET_CONFIG = 0x50;
+	SET_CONFIG = 0x51;
+	// KNoT request messages (from gateway)
+	GET_DATA = 0x30;
+	SET_DATA = 0x31;
+	GET_COMMAND = 0x32;
+	SET_COMMAND = 0x33;
+	// KNoT response messages (from device)
+	DATA = 0x20;
+	DATA_RESP = 0x21;
+	COMMAND = 0x22;
+	CONFIG = 0x24;
+	CONFIG_RESP = 0x25;
+}
+
+enum knot_evt_flag {
+	NONE = 0x00;
+	TIME = 0x01;
+	LOWER_THRESHOLD = 0x02;
+	UPPER_THRESHOLD = 0x04;
+	CHANGE = 0x08;
+	UNREGISTERED = 0x80;
+	MAX = 0x0f; 
+}
+
+//enum knot_validation {
+//	KNOT_DATA_RAW_SIZE = 16;
+//}
+
+
+message register_req {
+	uint64 id = 1;
+	string name = 2;
+}
+
+message register_rsp {
+	knot_status result = 1;
+	string UUID = 2;
+	string token = 3;
+}
+
+message schema_frag {
+	//knot_value_type value_type = 1;	// KNOT_VALUE_TYPE_* (int, float, bool, raw)
+	//knot_unit		unit = 2;	// KNOT_UNIT_*
+	//knot_type_id		type_id = 3;	// KNOT_TYPE_ID_*
+	string			name = 4;
+	int32			sensor_id = 5;
+}
+
+message schema {
+	repeated schema_frag schema = 1;
+}
+
+message data {
+	int32 sensor_id = 5;
+	oneof payload {
+		int32 value_int = 1;
+		bool value_bool = 2;
+		float value_float = 3;
+		bytes value_raw = 4;
+	}
+}
+
+message knot_msg {
+	knot_msg_type type = 1;
+	uint32 payload_len = 2;
+	oneof msg {
+		register_rsp reg_rsp = 3;
+		register_req reg_req = 4;
+	}
+}
