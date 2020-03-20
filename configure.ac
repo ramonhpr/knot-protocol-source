@@ -29,6 +29,34 @@ AC_PROG_RANLIB
 
 AC_PROG_LIBTOOL
 
+AC_ARG_ENABLE([protobuf],
+	      AS_HELP_STRING([--enable-protobuf], [Enable protobuf serialization]))
+if test "x$enable_protobuf" == "xyes" ; then
+
+  PKG_CHECK_MODULES(PROTOBUF, [protobuf >= 3.0.0],
+		    [AC_DEFINE([HAVE_PROTOBUF],[1],[Use PROTOBUF])],
+		    [AC_MSG_ERROR("protobuf 3.0 missing")])
+  AC_SUBST(PROTOBUF_CFLAGS)
+  AC_SUBST(PROTOBUF_LIBS)
+  PKG_CHECK_MODULES(LIBPROTOBUF_C, [libprotobuf-c],
+		    [AC_DEFINE([HAVE_LIBPROTOBUF_C],[1],[Use LIBPROTOBUF_C])],
+		    [AC_MSG_ERROR("libprotobuf-c missing")])
+  AC_SUBST(LIBPROTOBUF_C_CFLAGS)
+  AC_SUBST(LIBPROTOBUF_C_LIBS)
+
+  AC_ARG_VAR([PROTOC], [protobuf compiler command])
+  AC_PATH_PROG([PROTOC], [protoc], [],
+               [`$PKG_CONFIG --variable=exec_prefix protobuf`/bin:$PATH])
+  if test -z "$PROTOC"; then
+    AC_MSG_ERROR([Please install the protobuf compiler from https://code.google.com/p/protobuf/.])
+  fi
+
+  PROTOBUF_VERSION="$($PROTOC --version)"
+  AM_CONDITIONAL([BUILD_PROTOBUF], [test "x$enable_protobuf" == "xyes"])
+else
+  PROTOBUF_VERSION="not required, not building compiler"
+fi
+
 AC_CONFIG_FILES([ Makefile src/Makefile src/knotprotocol.pc])
 
 AC_SUBST([ARFLAGS], ["cr"])
