@@ -215,9 +215,25 @@ message knot_msg {
 		knot_msg_register_rsp reg_rsp = 3;
 		knot_msg_register_req reg_req = 4;
 	}
+	knot_status status = 10;
+}
+
+message Empty { }
+
+message thing {
+	string name = 1;
+	string id = 2;
+	string uuid = 3;
+	bool online = 4;
+	knot_msg_schema schema = 5;
+}
+
+message thing_list {
+	repeated thing things = 1;
 }
 
 option py_generic_services = true;
 service knot_sm { // knot state machine
 	rpc register_thing(knot_msg_register_req) returns (knot_msg_register_rsp);
+	rpc list_devices(Empty) returns (thing_list);
 }
