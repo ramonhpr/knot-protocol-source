@@ -186,16 +186,25 @@ message knot_msg_register_rsp {
 	string token = 3;
 }
 
-message knot_msg_schema_frag {
+message schema_item {
 	knot_value_type		value_type = 1;	// KNOT_VALUE_TYPE__* (int, float, bool, raw)
-	knot_unit		unit = 2;	// KNOT_UNIT__*
+	knot_unit			unit = 2;		// KNOT_UNIT__*
 	knot_type_id		type_id = 3;	// KNOT_TYPE_ID__*
-	string			name = 4;
-	int32			sensor_id = 5;
+	string				name = 4;
+	uint32				sensor_id = 5;
 }
 
-message knot_msg_schema {
-	repeated knot_msg_schema_frag schema_frags = 1;
+message schema {
+	repeated schema_item schema = 1;
+}
+
+message knot_msg_schema_req {
+	string UUID = 1;
+	schema schema = 2;
+}
+
+message knot_msg_schema_rsp {
+	knot_status result = 1;
 }
 
 message knot_msg_data {
@@ -212,8 +221,9 @@ message knot_msg {
 	knot_msg_type type = 1;
 	uint32 payload_len = 2;
 	oneof msg {
-		knot_msg_register_rsp reg_rsp = 3;
-		knot_msg_register_req reg_req = 4;
+		knot_msg_register_rsp reg_rsp  = 3;
+		knot_msg_register_req reg_req  = 4;
+		knot_msg_schema_req schema_req = 5;
 	}
 	knot_status status = 10;
 }
@@ -225,7 +235,7 @@ message thing {
 	string id = 2;
 	string uuid = 3;
 	bool online = 4;
-	knot_msg_schema schema = 5;
+	schema schema = 5;
 }
 
 message thing_list {
@@ -235,5 +245,6 @@ message thing_list {
 option py_generic_services = true;
 service knot_sm { // knot state machine
 	rpc register_thing(knot_msg_register_req) returns (knot_msg_register_rsp);
+	rpc schema(knot_msg_schema_req) returns (knot_msg_schema_rsp);
 	rpc list_devices(Empty) returns (thing_list);
 }
